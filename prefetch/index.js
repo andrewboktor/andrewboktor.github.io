@@ -8,7 +8,7 @@ function main() {
 
 function print() {
   var message = 'A';
-  //message = 'B';
+  message = 'B';
   console.log(message);
 }
 
