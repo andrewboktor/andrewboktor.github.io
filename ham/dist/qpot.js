@@ -5867,7 +5867,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 class Answer extends React.Component {
     render() {
-        return React.createElement("p", { onClick: () => { this.props.store.selectAnswer(this.props.answer.tag); } },
+        return React.createElement("p", { className:"Answer", onClick: () => { this.props.store.selectAnswer(this.props.answer.tag); } },
             this.props.answer.tag.toUpperCase(),
             " - ",
             this.props.answer.text,
@@ -5941,7 +5941,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "react");
 class Button extends React.Component {
     render() {
-        return React.createElement("button", { onClick: this.props.action },
+        return React.createElement("button", {  onClick: this.props.action, className: "Button"},
             " ",
             this.props.text,
             " ");
@@ -5983,8 +5983,8 @@ class Question extends React.Component {
         let answers = this.props.question.answers.map((answer) => {
             return React.createElement(Answer_1.Answer, { store: this.props.store, answer: answer, key: answer.tag });
         });
-        return React.createElement("div", null,
-            React.createElement("p", null,
+        return React.createElement("div", { className: "QuestionDiv"},
+            React.createElement("p", { className: "Question" },
                 this.props.question.tag,
                 " ",
                 this.props.question.text),
