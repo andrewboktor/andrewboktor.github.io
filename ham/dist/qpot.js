@@ -6091,6 +6091,31 @@ function parseAnswer(text) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+/* Format:
+SUBELEMENT
+
+
+T1A
+
+T1A01
+
+T1A02
+
+
+T1B
+
+T1B01
+...
+
+
+T1Z
+...
+T1Z99
+
+
+SUBELEMENT T2
+...
+*/
 exports.questionPoolText = `
 NCVEC Public Domain Release Monday, January 08,2018
 FCC Exam Element 2 Question Pool for Technician Class
@@ -8831,8 +8856,6 @@ D. 15 kHz
 
 T8B - Amateur satellite operation; Doppler shift; basic orbits; operating protocols; transmitter power considerations; telemetry and telecommand; satellite tracking 
 
-
-
 T8B01 (C)
 What telemetry information is typically transmitted by satellite beacons?
 A. The signal strength of received signals
@@ -9022,7 +9045,6 @@ D. A beacon
 
 
 T8D � Non-voice and digital communications: image signals; digital modes; CW; packet radio; PSK31; APRS; error detection and correction; NTSC; amateur radio networking; Digital Mobile/Migration Radio
-
 
 T8D01 (D)
 Which of the following is a digital communications mode?
