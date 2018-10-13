@@ -5726,10 +5726,13 @@ const data_1 = __webpack_require__(/*! ../data/data */ "./src/data/data.ts");
 class AppState {
     constructor() {
         this.questionsSinceRetryIncorrect = 0;
-        this.defaultProgress = { resumeAtIndex: undefined, currentQuestionIndex: [0, 0, 0], answeredCorrently: [], answeredIncorrectly: [] };
+        this.defaultProgress = { resumeAtIndex: undefined, currentQuestionIndex: [0, 0, 0], answeredCorrently: [], answeredIncorrectly: [], answeredIncorrectlyOnce: [] };
         this.questionPool = data_1.getData();
         this.numberOfQuestions = this.getTotalNumberOfQuestions();
         let progressFromStorage = this.getProgressFromLocalStorage();
+        if (progressFromStorage && !progressFromStorage.answeredIncorrectlyOnce) {
+            progressFromStorage.answeredIncorrectlyOnce = [];
+        }
         this.progress = progressFromStorage ? progressFromStorage : this.defaultProgress;
         this.currentQuestion = this.getQuestion(this.progress.currentQuestionIndex);
         mobx_1.autorun(() => { this.saveProgress(); });
@@ -5776,8 +5779,10 @@ class AppState {
                 // array.slice() can be used to do a shallow clone but typescript considers the output to be an array, so we need to cast
                 this.progress.answeredCorrently.push(this.progress.currentQuestionIndex.slice());
             }
-            else
+            else {
                 this.progress.answeredIncorrectly.push(this.progress.currentQuestionIndex.slice());
+                this.incorrect(this.progress.currentQuestionIndex);
+            }
         }
     }
     resetProgress() {
@@ -5788,9 +5793,20 @@ class AppState {
         this.progress.currentQuestionIndex = index;
         this.currentQuestion = this.getQuestion(index);
     }
+    incorrect(qi) {
+        if (!this.progress.answeredIncorrectlyOnce.find(AppState.compare(qi))) {
+            this.progress.answeredIncorrectlyOnce.push(qi);
+        }
+    }
+    static compare(qi) {
+        return (e) => {
+            return (qi[0] === e[0] && qi[1] === e[1] && qi[2] === e[2]);
+        };
+    }
     nextQuestion() {
         if (this.correctAnswer === undefined) {
             this.progress.answeredIncorrectly.push(this.copy(this.progress.currentQuestionIndex));
+            this.incorrect(this.progress.currentQuestionIndex);
         }
         let nextQuestion;
         // If resumeAtIndex is defined then we should try to get more incorrect questions
@@ -5910,10 +5926,16 @@ let App = class App extends React.Component {
         return React.createElement("div", null,
             React.createElement("p", null,
                 " CORRECT: ",
-                store.progress.answeredCorrently.length * 100.0 / store.numberOfQuestions,
-                "%   INCORRECT: ",
-                store.progress.answeredIncorrectly.length * 100.0 / store.numberOfQuestions,
+                (store.progress.answeredCorrently.length * 100.0 / store.numberOfQuestions).toFixed(2),
                 "% "),
+            React.createElement("p", null,
+                " INCORRECT: ",
+                (store.progress.answeredIncorrectly.length * 100.0 / store.numberOfQuestions).toFixed(2),
+                "% "),
+            React.createElement("p", null,
+                " INCORRECTONCE: ",
+                (store.progress.answeredIncorrectlyOnce.length * 100.0 / store.numberOfQuestions).toFixed(2),
+                "%"),
             React.createElement(Question_1.Question, { store: store, question: store.currentQuestion }),
             this.getCorrect(store),
             React.createElement(Button_1.Button, { text: "Next Question", action: () => { store.nextQuestion(); } }),
