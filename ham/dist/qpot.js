@@ -5803,6 +5803,14 @@ class AppState {
             return (qi[0] === e[0] && qi[1] === e[1] && qi[2] === e[2]);
         };
     }
+    dumpIncorrectOnceIds() {
+        let incorrect = this.progress.answeredIncorrectlyOnce.map(e => {
+            return this.questionPool.subelements[e[0]].groups[e[1]].questions[e[2]].tag;
+        });
+        let p = document.createElement('p');
+        p.innerText = JSON.stringify(incorrect);
+        document.body.appendChild(p);
+    }
     nextQuestion() {
         if (this.correctAnswer === undefined) {
             this.progress.answeredIncorrectly.push(this.copy(this.progress.currentQuestionIndex));
@@ -5939,6 +5947,7 @@ let App = class App extends React.Component {
             React.createElement(Question_1.Question, { store: store, question: store.currentQuestion }),
             this.getCorrect(store),
             React.createElement(Button_1.Button, { text: "Next Question", action: () => { store.nextQuestion(); } }),
+            React.createElement(Button_1.Button, { text: "Show Incorrect Once", action: () => store.dumpIncorrectOnceIds() }),
             React.createElement(Button_1.Button, { text: "Reset Progress", action: () => { store.resetProgress(); } }));
     }
 };
