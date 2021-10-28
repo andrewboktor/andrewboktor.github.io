@@ -1,0 +1,137 @@
+<html>
+
+<head>
+    <title>Matcheroo of mentors->mentees</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/javascript">
+        const mentordata =
+            `Mentor_1,2,7,11,15,16,0,1,3,4,5,6,8,9,10,12,13,14
+Mentor_2,15,13,2,11,9,0,1,3,4,5,6,7,8,12,16,10,14
+Mentor_3,11,12,4,16,15,0,1,2,3,5,6,7,8,9,10,13,14
+Mentor_4,11,12,4,16,15,0,1,2,3,5,6,7,8,9,10,13,14
+Mentor_5,12,14,2,4,1,0,3,5,6,7,8,9,10,11,13,15,16
+Mentor_6,9,13,0,15,1,2,3,4,5,6,7,8,10,11,12,14,16
+Mentor_7,4,12,2,15,6,0,1,3,5,7,8,9,10,11,13,14,16
+Mentor_8,14,10,12,15,16,0,1,2,3,4,5,6,7,8,9,11,13
+Mentor_9,16,15,13,5,2,0,1,3,4,6,7,8,9,10,11,12,14
+Mentor_10,2,8,4,15,6,0,1,3,5,7,9,10,11,12,13,14,16
+Mentor_11,9,13,10,5,0,1,2,3,4,6,7,8,11,12,14,15,16
+Mentor_12,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+Mentor_13,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+Mentor_2,15,13,2,11,9,0,1,3,4,5,6,7,8,12,16,10,14
+Mentor_7,4,12,2,15,6,0,1,3,5,7,8,9,10,11,13,14,16
+Mentor_9,16,15,13,5,2,0,1,3,4,6,7,8,9,10,11,12,14
+Mentor_11,9,13,10,5,0,1,2,3,4,6,7,8,11,12,14,15,16`;
+        const menteedata =
+            `Mentee_1,5,7,6,14,3,0,1,2,4,8,9,10,11,12,13,15,16
+Mentee_2,6,14,9,1,13,4,5,0,2,3,4,11,16,10,15,8,7
+Mentee_3,4,0,9,11,8,15,1,2,3,5,6,7,10,12,13,14,16
+Mentee_4,4,5,6,14,8,15,11,7,12,10,16,9,3,2,13,1,0
+Mentee_5,4,3,9,6,14,11,5,7,10,16,12,15,8,2,13,1,0
+Mentee_6,0,1,8,15,9,7,2,3,4,5,6,11,12,13,14,16,10
+Mentee_7,6,14,4,3,2,1,13,0,5,7,8,8,19,11,12,15,16
+Mentee_8,0,4,8,15,10,16,12,1,2,3,5,6,7,9,11,13,14
+Mentee_9,9,1,13,0,6,14,3,2,4,5,7,8,10,11,12,15,16
+Mentee_10,5,10,16,6,14,4,0,3,12,11,9,15,8,7,2,13,1
+Mentee_11,6,14,5,9,0,8,15,2,3,4,7,10,11,12,16,13,1
+Mentee_12,9,0,1,13,3,6,14,2,4,5,7,8,10,11,12,15,16
+Mentee_13,4,6,14,2,5,1,13,0,3,7,8,9,10,11,12,15,16
+Mentee_14,5,4,1,13,3,0,2,6,8,9,10,11,12,14,15,16,7
+Mentee_15,4,5,8,15,9,6,14,0,1,2,3,7,19,11,12,13,16
+Mentee_16,0,3,2,5,6,14,1,4,7,8,9,10,11,12,13,15,16
+Mentee_17,7,0,9,10,16,1,2,3,4,5,6,8,11,12,13,14,15`;
+        const mentors = parse(mentordata);
+        const mentees = parse(menteedata);
+        function parse(data) {
+            return data.split('\n').map(item => {
+                const a = item.split(',');
+                return { name: a[0], pref: a.slice(1).map(n=>parseInt(n)) };
+            })
+        }
+        console.log(mentors);
+
+
+        N = mentors.length;
+        // This function returns true if woman 'w' prefers man 'm1' over man 'm'
+        function wPrefersM1OverM(prefer, w, m, m1) {
+            // Check if w prefers m over her current engagment m1
+            for (var i = 0; i < N; i++) {
+                // If m1 comes before m in list of w, then w prefers her
+                // current engagement, don't do anything
+                if (prefer[w][i] == m1) return true;
+
+                // If m comes before m1 in w's list, then free her current
+                // engagement and engage her with m
+                if (prefer[w][i] == m) return false;
+            }
+        }
+
+        // Prints stable matching for N boys and N girls. Boys are numbered as 0 to
+        // N-1. Girls are numbered as N to 2N-1.
+        function stableMarriage(men, women) {
+            // Stores partner of women. This is our output array that
+            // stores passing information.  The value of wPartner[i]
+            // indicates the partner assigned to woman N+i.  Note that
+            // the woman numbers between N and 2*N-1. The value -1
+            // indicates that (N+i)'th woman is free
+            var wPartner = new Array(N);
+
+            // An array to store availability of men.  If mFree[i] is
+            // false, then man 'i' is free, otherwise engaged.
+            mFree = new Array(N);
+
+            // Initialize all men and women as free
+            wPartner.fill(-1);
+            mFree.fill(false);
+            var freeCount = N;
+
+            // While there are free men
+            while (freeCount > 0) {
+                // Pick the first free man (we could pick any)
+                var m;
+                for (m = 0; m < N; m++) if (mFree[m] === false) break;
+
+                // One by one go to all women according to m's preferences.
+                // Here m is the picked free man
+                for (var i = 0; i < N && mFree[m] == false; i++) {
+                    var w = men[m][i];
+
+                    // The woman of preference is free, w and m become
+                    // partners (Note that the partnership maybe changed
+                    // later). So we can say they are engaged not married
+                    if (wPartner[w] == -1) {
+                        wPartner[w] = m;
+                        mFree[m] = true;
+                        freeCount--;
+                    } // If w is not free
+                    else {
+                        // Find current engagement of w
+                        var m1 = wPartner[w];
+
+                        // If w prefers m over her current engagement m1,
+                        // then break the engagement between w and m1 and
+                        // engage m with w.
+                        if (wPrefersM1OverM(women, w, m, m1) == false) {
+                            wPartner[w] = m;
+                            mFree[m] = true;
+                            mFree[m1] = false;
+                        }
+                    } // End of Else
+                } // End of the for loop that goes to all women in m's list
+            } // End of main while loop
+
+            // Print the solution
+            document.write("<table><tbody><tr><td>Mentor</td><td>Mentee</td></tr>");
+            for (var i = 0; i < N; i++)
+                document.write("<tr><td>" + mentors[i].name + "</td><td>" + mentees[wPartner[i]].name + "</td></tr>");
+            document.write("</tbody></table>");
+        }
+
+        stableMarriage(mentees.map((m) => m.pref), mentors.map((m) => m.pref));
+    </script>
+</body>
+
+</html>
